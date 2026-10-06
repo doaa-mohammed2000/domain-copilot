@@ -4,5 +4,6 @@
     <Project Path="src/DomainCopilot.Application/DomainCopilot.Application.csproj" />
     <Project Path="src/DomainCopilot.Domain/DomainCopilot.Domain.csproj" />
     <Project Path="src/DomainCopilot.Infrastructure/DomainCopilot.Infrastructure.csproj" />
+    <Project Path="src/DomainCopilot.Worker/DomainCopilot.Worker.csproj" />
   </Folder>
 </Solution>
