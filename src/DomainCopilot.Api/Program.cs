@@ -6,6 +6,7 @@ using DomainCopilot.Application.Services;
 using DomainCopilot.Application.Interfaces.Ingestion;
 using DomainCopilot.Infrastructure.VectorStore;
 using Qdrant.Client;
+using DomainCopilot.Infrastructure.AI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddDbContext<DomainCopilotDbContext>(options =>
 
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<DocumentService>();
+builder.Services.AddScoped<IEmbeddingProvider, OpenAIEmbeddingProvider>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
