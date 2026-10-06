@@ -23,6 +23,9 @@ builder.Services.AddDbContext<DomainCopilotDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<IDocumentChunkRepository, DocumentChunkRepository>();
+builder.Services.AddScoped<IIngestionJobRepository, IngestionJobRepository>();
+
 builder.Services.AddScoped<DocumentService>();
 builder.Services.AddScoped<IEmbeddingProvider, OpenAIEmbeddingProvider>();
 var app = builder.Build();
