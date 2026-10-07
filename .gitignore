@@ -480,3 +480,14 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Local runtime data
+src/DomainCopilot.Api/data/
+
+# Local test files
+test-document.txt
+
+# Accidental local command files
+cls
+dir
+dotnet

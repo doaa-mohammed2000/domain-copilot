@@ -25,8 +25,16 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
 builder.Services.AddSingleton<IIngestionQueue, RedisIngestionQueue>();
 builder.Services.AddScoped<IDocumentContentStore, LocalDocumentContentStore>();
 
+var qdrantUrl = new Uri(
+    builder.Configuration["Qdrant:Url"]
+        ?? "http://localhost:6333");
+
 builder.Services.AddSingleton(new QdrantClient(
-    builder.Configuration["Qdrant:Url"] ?? "http://localhost:6333"));
+    qdrantUrl.Host,
+    qdrantUrl.Port,
+    qdrantUrl.Scheme.Equals(
+        "https",
+        StringComparison.OrdinalIgnoreCase)));
 
 builder.Services.AddScoped<IVectorStore, QdrantVectorStore>();
 
@@ -39,7 +47,7 @@ builder.Services.AddScoped<IDocumentChunkRepository, DocumentChunkRepository>();
 builder.Services.AddScoped<IIngestionJobRepository, IngestionJobRepository>();
 
 builder.Services.AddScoped<DocumentService>();
-builder.Services.AddScoped<IEmbeddingProvider, OpenAIEmbeddingProvider>();
+builder.Services.AddScoped<IEmbeddingProvider, LocalEmbeddingProvider>();
 
 builder.Services.AddScoped<IDocumentExtractor, TextDocumentExtractor>();
 builder.Services.AddScoped<IDocumentExtractor, MarkdownDocumentExtractor>();

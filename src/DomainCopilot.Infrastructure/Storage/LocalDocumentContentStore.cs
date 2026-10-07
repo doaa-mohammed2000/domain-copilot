@@ -51,23 +51,57 @@ public class LocalDocumentContentStore : IDocumentContentStore
         await content.CopyToAsync(
             fileStream,
             cancellationToken);
-
         return storedPath;
     }
 
-    public Task<Stream> OpenReadAsync(
+      public Task<Stream> OpenReadAsync(
         string storedPath,
         CancellationToken cancellationToken = default)
     {
-        if (!File.Exists(storedPath))
+        cancellationToken.ThrowIfCancellationRequested();
+
+        string resolvedPath;
+
+        if (Path.IsPathRooted(storedPath))
+        {
+            resolvedPath = storedPath;
+        }
+        else
+        {
+            var normalizedPath = storedPath
+                .Replace('\\', '/');
+
+            const string marker = "data/documents/";
+
+            var markerIndex = normalizedPath.IndexOf(
+                marker,
+                StringComparison.OrdinalIgnoreCase);
+
+            if (markerIndex >= 0)
+            {
+                var relativePath = normalizedPath[(markerIndex + marker.Length)..];
+
+                resolvedPath = Path.Combine(
+                    _rootPath,
+                    relativePath.Replace('/', Path.DirectorySeparatorChar));
+            }
+            else
+            {
+                resolvedPath = Path.Combine(
+                    _rootPath,
+                    normalizedPath.Replace('/', Path.DirectorySeparatorChar));
+            }
+        }
+
+        if (!File.Exists(resolvedPath))
         {
             throw new FileNotFoundException(
-                "Stored document was not found.",
-                storedPath);
+                "Document file was not found.",
+                resolvedPath);
         }
 
         Stream stream = new FileStream(
-            storedPath,
+            resolvedPath,
             FileMode.Open,
             FileAccess.Read,
             FileShare.Read,

@@ -15,6 +15,8 @@ using StackExchange.Redis;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.Configuration["Storage:DocumentsPath"] =
+    @"..\DomainCopilot.Api\data\documents";
 builder.Services.AddDbContext<DomainCopilotDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -40,7 +42,7 @@ builder.Services.AddScoped<IDocumentChunkRepository, DocumentChunkRepository>();
 builder.Services.AddScoped<IIngestionJobRepository, IngestionJobRepository>();
 builder.Services.AddScoped<IDocumentContentStore, LocalDocumentContentStore>();
 
-builder.Services.AddScoped<IEmbeddingProvider, OpenAIEmbeddingProvider>();
+builder.Services.AddScoped<IEmbeddingProvider, LocalEmbeddingProvider>();
 builder.Services.AddScoped<IVectorStore, QdrantVectorStore>();
 
 builder.Services.AddScoped<IDocumentExtractor, TextDocumentExtractor>();
@@ -53,6 +55,7 @@ builder.Services.AddScoped<IIngestionJobProcessor, IngestionJobProcessor>();
 builder.Services.AddSingleton<IIngestionQueue, RedisIngestionQueue>();
 
 builder.Services.AddHostedService<Worker>();
+
 
 var host = builder.Build();
 
