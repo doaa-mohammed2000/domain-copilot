@@ -51,7 +51,9 @@ public class IngestionJobProcessor : IIngestionJobProcessor
         try
         {
             job.Status = "Processing";
+            job.ErrorMessage = null;
             job.StartedAt = DateTime.UtcNow;
+            job.CompletedAt = null;
             job.UpdatedAt = DateTime.UtcNow;
 
             document.Status = "Processing";
@@ -135,10 +137,10 @@ public class IngestionJobProcessor : IIngestionJobProcessor
                 cancellationToken);
 
             job.Status = "Completed";
+            job.ErrorMessage = null;
             job.ProgressPercentage = 100;
             job.CompletedAt = DateTime.UtcNow;
             job.UpdatedAt = DateTime.UtcNow;
-
             document.Status = "Completed";
             document.FailureReason = null;
             document.UpdatedAt = DateTime.UtcNow;

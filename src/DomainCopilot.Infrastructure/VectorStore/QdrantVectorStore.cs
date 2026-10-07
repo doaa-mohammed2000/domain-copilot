@@ -32,27 +32,41 @@ public class QdrantVectorStore : IVectorStore
             embedding.Count,
             cancellationToken);
 
+        var point = new PointStruct
+        {
+            Id = new PointId
+            {
+                Uuid = chunk.Id.ToString()
+            },
+            Vectors = embedding.ToArray(),
+            Payload =
+            {
+                ["document_id"] = chunk.DocumentId.ToString(),
+                ["content"] = chunk.Content,
+                ["chunk_index"] = chunk.ChunkIndex
+            }
+        };
+
+        if (chunk.PageNumber.HasValue)
+        {
+            point.Payload["page_number"] = chunk.PageNumber.Value;
+        }
+
+        if (!string.IsNullOrWhiteSpace(chunk.Section))
+        {
+            point.Payload["section"] = chunk.Section;
+        }
+
+        if (!string.IsNullOrWhiteSpace(chunk.Clause))
+        {
+            point.Payload["clause"] = chunk.Clause;
+        }
+
         await _client.UpsertAsync(
             collectionName: CollectionName,
             points: new[]
             {
-                new PointStruct
-                {
-                    Id = new PointId
-                    {
-                        Uuid = chunk.Id.ToString()
-                    },
-                    Vectors = embedding.ToArray(),
-                    Payload =
-                    {
-                        ["document_id"] = chunk.DocumentId.ToString(),
-                        ["content"] = chunk.Content,
-                        ["chunk_index"] = chunk.ChunkIndex,
-                        ["page_number"] = chunk.PageNumber,
-                        ["section"] = chunk.Section,
-                        ["clause"] = chunk.Clause
-                    }
-                }
+                point
             },
             cancellationToken: cancellationToken);
 
